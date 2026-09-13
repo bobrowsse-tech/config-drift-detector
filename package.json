@@ -104,5 +104,10 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/bobrowsse-tech/config-drift-detector"
+  },
+  "icon": "images/icon.png",
+  "galleryBanner": {
+    "color": "#1E3A5F",
+    "theme": "dark"
   }
 }
