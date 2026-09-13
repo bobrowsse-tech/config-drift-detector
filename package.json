@@ -109,5 +109,18 @@
   "galleryBanner": {
     "color": "#1E3A5F",
     "theme": "dark"
+  },
+  "keywords": [
+    "config",
+    "drift",
+    "env",
+    "kubernetes",
+    "terraform",
+    "dotenv",
+    "devops"
+  ],
+  "homepage": "https://github.com/bobrowsse-tech/config-drift-detector#readme",
+  "bugs": {
+    "url": "https://github.com/bobrowsse-tech/config-drift-detector/issues"
   }
 }
