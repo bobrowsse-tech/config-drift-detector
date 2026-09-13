@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  SHARED_URL: https://staging.example.com
+  LOG_LEVEL: debug

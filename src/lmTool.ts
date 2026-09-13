@@ -1,27 +1,45 @@
 import * as vscode from 'vscode';
+import type { ConfigDriftService, DriftReport } from './service';
+import type { DashboardProvider } from './dashboardProvider';
 
-// Language Model Tool registration — makes this extension's core capability
-// callable by Copilot Chat, Claude Code, or any other agent that supports
-// VS Code's Language Model Tool API. The `name` here MUST match the `name`
-// field of the languageModelTools entry in package.json.
-//
-// Docs: https://code.visualstudio.com/api/extension-guides/ai/tools
+interface ToolInput {
+  environments?: string[];
+}
 
-export function registerConfigDriftScanTool(context: vscode.ExtensionContext) {
+/**
+ * Language Model Tool — report-only. Scanning is fine; ignore-list writes
+ * stay behind the dashboard Ignore button (human click).
+ */
+export function registerConfigDriftScanTool(
+  context: vscode.ExtensionContext,
+  getService: () => ConfigDriftService | undefined,
+  setReport: (report: DriftReport) => void,
+  dashboard: DashboardProvider
+) {
   context.subscriptions.push(
-    vscode.lm.registerTool("config_drift_scan", {
+    vscode.lm.registerTool('config_drift_scan', {
       async invoke(
-        options: vscode.LanguageModelToolInvocationOptions<any>,
+        options: vscode.LanguageModelToolInvocationOptions<ToolInput>,
         _token: vscode.CancellationToken
       ) {
-        // TODO: implement using the same core logic the dashboard buttons
-        // call — do not duplicate; both entry points should call one
-        // shared service module (see DIRECTIVE.md, "Implementation phases").
-        const result = "config_drift_scan is not yet implemented \u2014 see DIRECTIVE.md";
-        return new vscode.LanguageModelToolResult([
-          new vscode.LanguageModelTextPart(result),
-        ]);
+        const service = getService();
+        if (!service) {
+          return textResult('No workspace folder is open.');
+        }
+        const environments = options.input?.environments;
+        const result = service.scan({ environments });
+        setReport(result.report);
+        dashboard.showReport(result.report);
+        dashboard.setSummary(
+          `${result.report.summary.missing} missing · ${result.report.summary.typeMismatch} type-mismatch · ${result.report.summary.ignored} ignored`
+        );
+        const notes = result.notes.length ? `\nNotes:\n${result.notes.map((n) => `- ${n}`).join('\n')}` : '';
+        return textResult(service.formatReport(result.report) + notes);
       },
     })
   );
+}
+
+function textResult(text: string): vscode.LanguageModelToolResult {
+  return new vscode.LanguageModelToolResult([new vscode.LanguageModelTextPart(text)]);
 }
