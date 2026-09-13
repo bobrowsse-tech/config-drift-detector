@@ -1,0 +1,108 @@
+{
+  "name": "config-drift-detector",
+  "displayName": "Config Drift Detector",
+  "description": "Diffs environment configuration (.env, k8s, Terraform) across environments and flags the keys that silently diverged.",
+  "version": "0.1.0",
+  "publisher": "bobrowsse-tech",
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "config-drift-detectorContainer",
+          "title": "Config Drift Detector",
+          "icon": "$(git-compare)"
+        }
+      ]
+    },
+    "views": {
+      "config-drift-detectorContainer": [
+        {
+          "id": "config-drift-detectorView",
+          "name": "Dashboard",
+          "type": "webview"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "configDrift.scan",
+        "title": "Config Drift Detector: Scan Environments"
+      },
+      {
+        "command": "configDrift.viewReport",
+        "title": "Config Drift Detector: View Drift Report"
+      },
+      {
+        "command": "configDrift.jumpToSource",
+        "title": "Config Drift Detector: Jump to Source"
+      },
+      {
+        "command": "configDrift.ignoreKey",
+        "title": "Config Drift Detector: Ignore Key"
+      }
+    ],
+    "languageModelTools": [
+      {
+        "name": "config_drift_scan",
+        "tags": [
+          "config-drift-detector"
+        ],
+        "toolReferenceName": "config_drift_scan",
+        "displayName": "Config Drift Detector — config_drift_scan",
+        "modelDescription": "Scans the workspace's environment configuration files (.env*, k8s manifests, terraform tfvars) and reports keys that are inconsistent across environments. Use this when the user asks about environment config differences, missing env vars, or config drift.",
+        "canBeReferencedInPrompt": true,
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "environments": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Optional subset of environment names to compare, e.g. ['staging','production']. Omit to compare all detected environments."
+            }
+          }
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "npm run check-types && node esbuild.js",
+    "check-types": "tsc --noEmit",
+    "watch": "npm-run-all -p watch:*",
+    "watch:esbuild": "node esbuild.js --watch",
+    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+    "vscode:prepublish": "npm run package",
+    "package": "npm run check-types && node esbuild.js --production",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.95.0",
+    "@types/node": "^20.0.0",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.0",
+    "esbuild": "^0.24.0",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^5.6.0"
+  },
+  "dependencies": {
+    "dotenv": "latest",
+    "yaml": "latest",
+    "js-yaml": "latest",
+    "fast-glob": "latest",
+    "diff": "latest"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bobrowsse-tech/config-drift-detector"
+  }
+}
