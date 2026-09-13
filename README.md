@@ -1,25 +1,42 @@
 # Config Drift Detector
 
-Diffs environment configuration across `.env*` files, Kubernetes manifests, and Terraform tfvars — and flags keys that are missing, ignored on purpose, or look type-mismatched.
+Diffs environment configuration across `.env*` files, Kubernetes overlays, and Terraform tfvars — flags keys that are missing, intentionally ignored, or look type-mismatched. Secret **values** are never shown (names and coarse shapes only).
 
-Open a workspace, open the **Config Drift Detector** side panel, then:
-
-1. **Scan Environments** — discovers environments by convention and builds a key inventory (names and coarse shapes only; secret values are never shown).
-2. **View Drift Report** — sortable table of Key / Present in / Missing from / Flag.
-3. **Jump to Source** — opens the file and line where a key is defined.
-4. **Ignore Key** — appends to a checked-in `.configdrift-ignore` (optionally `KEY@environment`) for intentionally environment-specific values.
-
-Agents can call `config_drift_scan` for a report-only structural diff.
-
-## Development
+## Install
 
 ```bash
+git clone https://github.com/bobrowsse-tech/config-drift-detector.git
+cd config-drift-detector
 npm install
-npm run watch
-npm run test:unit
+npm run package
+npx @vscode/vsce package --no-dependencies
+code --install-extension config-drift-detector-0.1.0.vsix
 ```
 
-Press `F5` in VS Code to launch an Extension Development Host.
+Or press **F5** after `npm install` for an Extension Development Host.
+
+## Use
+
+Open the **Config Drift Detector** side panel:
+
+| Action | What it does |
+|---|---|
+| **Scan Environments** | Discovers envs by convention and builds a key inventory |
+| **View Drift Report** | Key / present in / missing from / flag |
+| **Jump to Source** | Opens the defining file:line |
+| **Ignore Key** | Appends to checked-in `.configdrift-ignore` (`KEY` or `KEY@env`) |
+
+Agents can call `config_drift_scan` (report-only).
+
+## How it’s built
+
+TypeScript strict + esbuild CJS bundle; VS Code–free service in `src/service/`; dashboard + LM tool call the same module.
+
+```bash
+npm run watch
+npm run test:unit
+npm run package
+```
 
 ## License
 

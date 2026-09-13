@@ -50,7 +50,7 @@ async function confirmMappings(
 }
 
 export function activate(context: vscode.ExtensionContext) {
-  const dashboard = new DashboardProvider(context.extensionUri);
+  const dashboard = new DashboardProvider();
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider('config-drift-detectorView', dashboard)
   );
